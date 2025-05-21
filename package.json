@@ -1,0 +1,19 @@
+{
+  "name": "scosco",
+  "version": "1.0.0",
+  "description": "pitch detection and viewer",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "aike",
+  "license": "MIT",
+  "dependencies": {
+    "pitchfinder": "^2.3.2",
+    "vexflow": "^5.0.0"
+  },
+  "devDependencies": {
+    "webpack": "^5.99.9",
+    "webpack-cli": "^6.0.1"
+  }
+}
