@@ -7,7 +7,7 @@ document.body.appendChild(div);
 
 // SVGレンダラ
 const renderer = new Renderer(div, Renderer.Backends.SVG);
-renderer.resize(200, 200);
+renderer.resize(200, 250);
 const context = renderer.getContext();
 const svgContainer = context.svg; // SVG DOM取得
 
@@ -21,11 +21,16 @@ function drawNotes(noteNames) {
   const stave = new Stave(10, 40, 100);
   stave.addClef('treble').setContext(context).draw();
 
+  // === ヘ音記号 五線 ===
+  const bassStave = new Stave(10, 140, 100);
+  bassStave.addClef('bass').setContext(context).draw();
+
   // 新しい音符を描画
   const notes = noteNames.map(n =>
     new StaveNote({ keys: [n], duration: 'w' })
   );
   Formatter.FormatAndDraw(context, stave, notes);
+  Formatter.FormatAndDraw(context, bassStave, []);
 }
 
 // 初期描画（C4〜F4）
