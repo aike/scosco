@@ -1,5 +1,5 @@
 
-import { Renderer, Stave, StaveNote, Formatter } from 'vexflow';
+import { Renderer, Stave, StaveNote, StaveConnector, Formatter } from 'vexflow';
 
 // DOMにdiv作成
 const div = document.createElement('div');
@@ -38,6 +38,10 @@ function drawNotes(noteName) {
   // === ヘ音記号 五線 ===
   const bassStave = new Stave(10, 140, 100);
   bassStave.addClef('bass').setContext(context).draw();
+
+  // 括線（ピアノ譜っぽく）
+  new StaveConnector(stave, bassStave).setType(3).setContext(context).draw(); // BRACE
+  new StaveConnector(stave, bassStave).setType(1).setContext(context).draw(); // SINGLE
 
   // 新しい音符を描画
   const note = new StaveNote({ keys: [noteName], duration: 'w' });
