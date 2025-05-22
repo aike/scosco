@@ -11,7 +11,21 @@ renderer.resize(200, 250);
 const context = renderer.getContext();
 const svgContainer = context.svg; // SVG DOM取得
 
-function drawNotes(noteNames) {
+// === MIDI番号に変換する関数 ===
+function noteToMidi(noteStr) {
+  const [noteRaw, octaveStr] = noteStr.toLowerCase().split('/');
+  const noteNames = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 };
+  const step = noteRaw[0];
+  const accidental = noteRaw.slice(1);
+  const semitone = noteNames[step] + (accidental === '#' ? 1 : accidental === 'b' ? -1 : 0);
+  const octave = parseInt(octaveStr);
+  return 12 * (octave + 1) + semitone;
+}
+
+function drawNotes(noteName) {
+  console.log(noteName);
+  const noteNo = noteToMidi(noteName);
+
   // SVG内をすべて消す（音符・五線譜すべて）
   while (svgContainer.firstChild) {
     svgContainer.removeChild(svgContainer.firstChild);
@@ -26,22 +40,25 @@ function drawNotes(noteNames) {
   bassStave.addClef('bass').setContext(context).draw();
 
   // 新しい音符を描画
-  const notes = noteNames.map(n =>
-    new StaveNote({ keys: [n], duration: 'w' })
-  );
-  Formatter.FormatAndDraw(context, stave, notes);
-  Formatter.FormatAndDraw(context, bassStave, []);
+  const note = new StaveNote({ keys: [noteName], duration: 'w' });
+
+  if (noteNo >= noteToMidi("c/4")) {
+    Formatter.FormatAndDraw(context, stave, [note]);
+  } else {
+    Formatter.FormatAndDraw(context, bassStave, [note]);
+  }
 }
 
 // 初期描画（C4〜F4）
-drawNotes(['c/4']);
+drawNotes('c/4');
 
 // 3秒後に音符を差し替え（G4〜B4）
 setInterval(() => {
   // 音階からランダムに1つ選ぶ
-  const pitches = ['c/4', 'd/4', 'e/4', 'f/4', 'g/4', 'a/4', 'b/4', 'c/5'];
+  const pitches = ['c/3', 'd/3', 'e/3', 'f/3', 'g/3', 'a/3', 'b/3',
+                   'c/4', 'd/4', 'e/4', 'f/4', 'g/4', 'a/4', 'b/4', 'c/5'];
   const pitch = pitches[Math.floor(Math.random() * pitches.length)];
-  drawNotes([pitch]);
+  drawNotes(pitch);
 }, 3000);
 
 
