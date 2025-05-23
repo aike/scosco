@@ -22,6 +22,14 @@ function noteToMidi(noteStr) {
   return 12 * (octave + 1) + semitone;
 }
 
+function midiToNote(noteNo) {
+  const noteStrings = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
+  const rounded = Math.round(noteNo);
+  const note = noteStrings[rounded % 12];
+  const octave = Math.floor(rounded / 12) - 1;
+  return note + '/' + octave;
+}
+
 function drawNotes(noteName) {
   console.log(noteName);
   const noteNo = noteToMidi(noteName);
@@ -36,12 +44,12 @@ function drawNotes(noteName) {
   stave.addClef('treble').setContext(context).draw();
 
   // === ヘ音記号 五線 ===
-  const bassStave = new Stave(10, 140, 100);
+  const bassStave = new Stave(10, 120, 100);
   bassStave.addClef('bass').setContext(context).draw();
 
   // 括線（ピアノ譜っぽく）
-  new StaveConnector(stave, bassStave).setType(3).setContext(context).draw(); // BRACE
-  new StaveConnector(stave, bassStave).setType(1).setContext(context).draw(); // SINGLE
+  //new StaveConnector(stave, bassStave).setType(3).setContext(context).draw(); // BRACE
+  //new StaveConnector(stave, bassStave).setType(1).setContext(context).draw(); // SINGLE
 
   // 新しい音符を描画
   const note = new StaveNote({ keys: [noteName], duration: 'w' });
@@ -49,7 +57,11 @@ function drawNotes(noteName) {
   if (noteNo >= noteToMidi("c/4")) {
     Formatter.FormatAndDraw(context, stave, [note]);
   } else {
-    Formatter.FormatAndDraw(context, bassStave, [note]);
+    console.log("notename=" + noteName);
+    const newNoteName = midiToNote(noteNo + 21);
+    console.log("newnotename=" + newNoteName);
+    const bnote = new StaveNote({ keys: [newNoteName], duration: 'w' });
+    Formatter.FormatAndDraw(context, bassStave, [bnote]);
   }
 }
 
