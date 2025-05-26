@@ -1,5 +1,5 @@
 
-import { Renderer, Stave, StaveNote, StaveConnector, Formatter } from 'vexflow';
+import { Renderer, Stave, StaveNote, StaveConnector, Formatter, Accidental } from 'vexflow';
 
 // DOMにdiv作成
 const div = document.createElement('div');
@@ -51,17 +51,29 @@ function drawNotes(noteName) {
   //new StaveConnector(stave, bassStave).setType(3).setContext(context).draw(); // BRACE
   //new StaveConnector(stave, bassStave).setType(1).setContext(context).draw(); // SINGLE
 
-  // 新しい音符を描画
+  if (noteNo < noteToMidi("c/4")) {
+    noteName = midiToNote(noteNo + 21);
+  }
+
+  // === accidental（#やb）を検出 ===
+  const accidentalMatch = noteName.match(/[a-g](#|b)/i);
+  const accidental = accidentalMatch ? accidentalMatch[1] : null;
+  // 新しい音符を生成
   const note = new StaveNote({ keys: [noteName], duration: 'w' });
+  // === 必要ならaccidental（装飾）を追加 ===
+  if (accidental) {
+    note.addModifier(new Accidental(accidental));
+  }
 
   if (noteNo >= noteToMidi("c/4")) {
     Formatter.FormatAndDraw(context, stave, [note]);
   } else {
-    console.log("notename=" + noteName);
-    const newNoteName = midiToNote(noteNo + 21);
-    console.log("newnotename=" + newNoteName);
-    const bnote = new StaveNote({ keys: [newNoteName], duration: 'w' });
-    Formatter.FormatAndDraw(context, bassStave, [bnote]);
+    //const newNoteName = midiToNote(noteNo + 21);
+    //const bnote = new StaveNote({ keys: [newNoteName], duration: 'w' });
+    //if (accidental) {
+    //  note.addModifier(new Accidental(accidental));
+    //}
+    Formatter.FormatAndDraw(context, bassStave, [note]);
   }
 }
 
@@ -71,8 +83,8 @@ drawNotes('c/4');
 // 3秒後に音符を差し替え（G4〜B4）
 setInterval(() => {
   // 音階からランダムに1つ選ぶ
-  const pitches = ['c/3', 'd/3', 'e/3', 'f/3', 'g/3', 'a/3', 'b/3',
-                   'c/4', 'd/4', 'e/4', 'f/4', 'g/4', 'a/4', 'b/4', 'c/5'];
+  const pitches = ['c/3', 'c#/3', 'd/3', 'e/3', 'f/3', 'f#/3', 'g/3', 'a/3', 'bb/3','b/3',
+                   'c/4', 'c#/4', 'd/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'a/4', 'bb/4', 'b/4', 'c/5'];
   const pitch = pitches[Math.floor(Math.random() * pitches.length)];
   drawNotes(pitch);
 }, 3000);
