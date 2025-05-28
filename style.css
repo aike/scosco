@@ -1,0 +1,24 @@
+#notename {
+  position: absolute;
+  top: 30px;
+  left: 110px;
+  font-size: 50px;
+  font-family: 'Times New Roman', Times, serif;
+  font-style: italic;
+  text-align: right;
+}
+
+#accidental {
+  position: absolute;
+  top: 35px;
+  left: 135px;
+  font-size: 30px;
+  font-family: 'Times New Roman', Times, serif;
+  font-style: italic;
+}
+
+#score {
+  position: absolute;
+  top: 50px;
+  left: 80px;
+}
