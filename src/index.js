@@ -3,13 +3,23 @@ import { Renderer, Stave, StaveNote, StaveConnector, Formatter, Accidental } fro
 
 // DOMにdiv作成
 const div = document.querySelector("#score");
-const textDiv = document.querySelector("#notename");
+const textDiv1 = document.querySelector("#notename");
+const textDiv2 = document.querySelector("#accidental");
 
 // SVGレンダラ
 const renderer = new Renderer(div, Renderer.Backends.SVG);
 renderer.resize(200, 250);
 const context = renderer.getContext();
 const svgContainer = context.svg; // SVG DOM取得
+
+function frequencyToNote(freq) {
+  const noteStrings = ['c', 'c#', 'd', 'eb', 'e', 'f', 'f#', 'g', 'g#', 'a', 'bb', 'b'];
+  const num = 12 * (Math.log(freq/440)/Math.log(2)) + 69;
+  const r = Math.round(num);
+  const note = noteStrings[r % 12];
+  const octave = Math.floor(r/12) - 1;
+  return `${note}/${octave}`;
+}
 
 // === MIDI番号に変換する関数 ===
 function noteToMidi(noteStr) {
@@ -23,7 +33,7 @@ function noteToMidi(noteStr) {
 }
 
 function midiToNote(noteNo) {
-  const noteStrings = ['c', 'c#', 'd', 'd#', 'e', 'f', 'f#', 'g', 'g#', 'a', 'a#', 'b'];
+  const noteStrings = ['c', 'c#', 'd', 'eb', 'e', 'f', 'f#', 'g', 'g#', 'a', 'bb', 'b'];
   const rounded = Math.round(noteNo);
   const note = noteStrings[rounded % 12];
   const octave = Math.floor(rounded / 12) - 1;
@@ -33,7 +43,8 @@ function midiToNote(noteNo) {
 function drawNote(noteName) {
   const accidentalMatch = noteName.match(/[a-g](#|b)/i);
   const accidental = accidentalMatch ? ((accidentalMatch[1] === "#") ? '♯' : '♭') : "";
-  textDiv.textContent = noteName[0].toUpperCase() + accidental;
+  textDiv1.textContent = noteName[0].toUpperCase();
+  textDiv2.textContent = accidental;
 }
 
 function drawScore(noteName) {
@@ -108,6 +119,7 @@ setInterval(() => {
 */
 
 let currentPitch = 0;
+/*
 setInterval(() => {
   // 音階からランダムに1つ選ぶ
   const pitches = ['c/3', 'c#/3', 'd/3', 'eb/3', 'e/3', 'f/3', 'f#/3', 'g/3', 'g#/3', 'a/3', 'bb/3','b/3',
@@ -117,103 +129,17 @@ setInterval(() => {
   drawNote(pitch);
   drawScore(pitch);
 }, 3000);
-
-
-
-/*
-import { Renderer, Stave, StaveNote, Voice, Formatter } from 'vexflow';
-
-// DOMにSVG描画領域を作成
-const div = document.createElement('div');
-document.body.appendChild(div);
-
-// Create an SVG renderer and attach it to the DIV element named "output".
-const renderer = new Renderer(div, Renderer.Backends.SVG);
-
-// Configure the rendering context.
-renderer.resize(500, 500);
-const context = renderer.getContext();
-
-// Create a stave of width 400 at position 10, 40 on the canvas.
-const stave = new Stave(10, 40, 400);
-
-// Add a clef and time signature.
-stave.addClef("treble").addTimeSignature("4/4");
-
-// Connect it to the rendering context and draw!
-stave.setContext(context).draw();
-
-// Create the notes
-const notes = [
-    // A quarter-note C.
-    new StaveNote({ keys: ["c/4"], duration: "q" }),
-
-    // A quarter-note D.
-    new StaveNote({ keys: ["d/4"], duration: "q" }),
-
-    // A quarter-note rest. Note that the key (b/4) specifies the vertical
-    // position of the rest.
-    new StaveNote({ keys: ["b/4"], duration: "qr" }),
-
-    // A C-Major chord.
-    new StaveNote({ keys: ["c/4", "e/4", "g/4"], duration: "q" }),
-];
-
-// Create a voice in 4/4 and add above notes
-const voice = new Voice({ num_beats: 4, beat_value: 4 });
-voice.addTickables(notes);
-
-// Format and justify the notes to 400 pixels.
-new Formatter().joinVoices([voice]).format([voice], 350);
-
-// Render voice
-voice.draw(context, stave);
 */
-/*
-const renderer = new Renderer(div, Renderer.Backends.SVG);
-renderer.resize(500, 250);
-const context = renderer.getContext();
 
-// === ト音記号 五線 ===
-const trebleStave = new Stave(10, 40, 200);
-trebleStave.addClef('treble').setContext(context).draw();
+setInterval(() => {
+  // 音階からランダムに1つ選ぶ
+  const pitches = [130.81, 138.59, 146.83, 155.56, 164.81, 174.61, 184.99, 195.99, 207.65, 220.00, 233.08, 246.94, 
+                   261.62, 277.18, 293.66, 311.12, 329.62, 349.22, 369.99, 391.99, 415.30, 440.00, 466.16, 493.88, 523.25];
+  const pitch = pitches[currentPitch];
+  currentPitch = (currentPitch + 1) % pitches.length;
+  const noteName = frequencyToNote(pitch);
+  console.log(pitch, noteName);
+  drawNote(noteName);
+  drawScore(noteName);
+}, 3000);
 
-// === ヘ音記号 五線 ===
-const bassStave = new Stave(10, 140, 200);
-bassStave.addClef('bass').setContext(context).draw();
-
-// === ト音記号の音符 ===
-const trebleNotes = [
-  new StaveNote({ keys: ['c/4'], duration: 'q' }),
-  new StaveNote({ keys: ['d/4'], duration: 'q' }),
-];
-
-// === ヘ音記号の音符 ===
-const bassNotes = [
-  new StaveNote({ keys: ['c/4'], duration: 'q' }),
-  new StaveNote({ keys: ['d/4'], duration: 'q' }),
-];
-
-// === フォーマットして描画 ===
-Formatter.FormatAndDraw(context, trebleStave, trebleNotes);
-Formatter.FormatAndDraw(context, bassStave, bassNotes);
-*/
-/*
-// === 括線（ピアノ譜らしさ） ===
-const brace = new StaveConnector(trebleStave, bassStave);
-brace.setType(StaveConnector.type.BRACE);
-brace.setContext(context);
-brace.draw();
-
-// 左線（縦棒）
-const lineLeft = new StaveConnector(trebleStave, bassStave);
-lineLeft.setType(StaveConnector.type.SINGLE);
-lineLeft.setContext(context);
-lineLeft.draw();
-
-// 小節線（右側）
-const lineRight = new StaveConnector(trebleStave, bassStave);
-lineRight.setType(StaveConnector.type.SINGLE_RIGHT);
-lineRight.setContext(context);
-lineRight.draw();
-*/
