@@ -1,0 +1,11 @@
+#notename {
+  font-size: 50px;
+  font-family: 'Times New Roman', Times, serif;
+  font-style: italic;
+  margin: 30px 0 0 110px;
+}
+#score {
+  position: absolute;
+  top: 50px;
+  left: 80px;
+}

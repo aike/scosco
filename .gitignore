@@ -4,6 +4,7 @@ node_modules/
 # Webpack build output
 dist/*
 !dist/index.html
+!dist/style.css
 
 # Logs
 npm-debug.log*

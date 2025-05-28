@@ -2,8 +2,8 @@
 import { Renderer, Stave, StaveNote, StaveConnector, Formatter, Accidental } from 'vexflow';
 
 // DOMにdiv作成
-const div = document.createElement('div');
-document.body.appendChild(div);
+const div = document.querySelector("#score");
+const textDiv = document.querySelector("#notename");
 
 // SVGレンダラ
 const renderer = new Renderer(div, Renderer.Backends.SVG);
@@ -30,7 +30,13 @@ function midiToNote(noteNo) {
   return note + '/' + octave;
 }
 
-function drawNotes(noteName) {
+function drawNote(noteName) {
+  const accidentalMatch = noteName.match(/[a-g](#|b)/i);
+  const accidental = accidentalMatch ? ((accidentalMatch[1] === "#") ? '♯' : '♭') : "";
+  textDiv.textContent = noteName[0].toUpperCase() + accidental;
+}
+
+function drawScore(noteName) {
   //console.log(noteName);
   const noteNo = noteToMidi(noteName);
 
@@ -108,7 +114,8 @@ setInterval(() => {
                    'c/4', 'c#/4', 'd/4', 'eb/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/4', 'bb/4','b/4', 'c/5'];
   const pitch = pitches[currentPitch];
   currentPitch = (currentPitch + 1) % pitches.length;
-  drawNotes(pitch);
+  drawNote(pitch);
+  drawScore(pitch);
 }, 3000);
 
 
