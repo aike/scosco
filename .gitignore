@@ -2,9 +2,10 @@
 node_modules/
 
 # Webpack build output
-dist/*
-!dist/index.html
-!dist/style.css
+# dist/*
+# !dist/index.html
+# !dist/style.css
+# !dist/recorder-processor.js
 
 # Logs
 npm-debug.log*
