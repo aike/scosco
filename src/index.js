@@ -31,7 +31,7 @@ function midiToNote(noteNo) {
 }
 
 function drawNotes(noteName) {
-  console.log(noteName);
+  //console.log(noteName);
   const noteNo = noteToMidi(noteName);
 
   // SVG内をすべて消す（音符・五線譜すべて）
@@ -51,16 +51,31 @@ function drawNotes(noteName) {
   //new StaveConnector(stave, bassStave).setType(3).setContext(context).draw(); // BRACE
   //new StaveConnector(stave, bassStave).setType(1).setContext(context).draw(); // SINGLE
 
-  if (noteNo < noteToMidi("c/4")) {
-    noteName = midiToNote(noteNo + 21);
-  }
 
   // === accidental（#やb）を検出 ===
   const accidentalMatch = noteName.match(/[a-g](#|b)/i);
-  const accidental = accidentalMatch ? accidentalMatch[1] : null;
+  const accidental = accidentalMatch ? accidentalMatch[1] : "";
+
+  if (noteNo < noteToMidi("c/4")) {
+    let oct = parseInt(noteName.split('/')[1], 10);
+    let note = "";
+    switch (noteName[0]) {
+      case 'c': note = 'a'; oct += 1; break;
+      case 'd': note = 'b'; oct += 1; break;
+      case 'e': note = 'c'; oct += 2; break;
+      case 'f': note = 'd'; oct += 2; break;
+      case 'g': note = 'e'; oct += 2; break;
+      case 'a': note = 'f'; oct += 2; break;
+      case 'b': note = 'g'; oct += 2; break;
+      default: break;
+    }
+    // console.log("noteconv: " + noteName + " -> " + (note + accidental + '/' + oct));
+    noteName = note + accidental + '/' + oct;
+  }
+
   // 新しい音符を生成
   const note = new StaveNote({ keys: [noteName], duration: 'w' });
-  // === 必要ならaccidental（装飾）を追加 ===
+  // === 必要なら臨時記号を追加 ===
   if (accidental) {
     note.addModifier(new Accidental(accidental));
   }
@@ -68,24 +83,31 @@ function drawNotes(noteName) {
   if (noteNo >= noteToMidi("c/4")) {
     Formatter.FormatAndDraw(context, stave, [note]);
   } else {
-    //const newNoteName = midiToNote(noteNo + 21);
-    //const bnote = new StaveNote({ keys: [newNoteName], duration: 'w' });
-    //if (accidental) {
-    //  note.addModifier(new Accidental(accidental));
-    //}
     Formatter.FormatAndDraw(context, bassStave, [note]);
   }
 }
 
 // 初期描画（C4〜F4）
-drawNotes('c/4');
+//drawNotes('c/4');
 
 // 3秒後に音符を差し替え（G4〜B4）
+/*
 setInterval(() => {
   // 音階からランダムに1つ選ぶ
   const pitches = ['c/3', 'c#/3', 'd/3', 'e/3', 'f/3', 'f#/3', 'g/3', 'a/3', 'bb/3','b/3',
                    'c/4', 'c#/4', 'd/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'a/4', 'bb/4', 'b/4', 'c/5'];
   const pitch = pitches[Math.floor(Math.random() * pitches.length)];
+  drawNotes(pitch);
+}, 3000);
+*/
+
+let currentPitch = 0;
+setInterval(() => {
+  // 音階からランダムに1つ選ぶ
+  const pitches = ['c/3', 'c#/3', 'd/3', 'eb/3', 'e/3', 'f/3', 'f#/3', 'g/3', 'g#/3', 'a/3', 'bb/3','b/3',
+                   'c/4', 'c#/4', 'd/4', 'eb/4', 'e/4', 'f/4', 'f#/4', 'g/4', 'g#/4', 'a/4', 'bb/4','b/4', 'c/5'];
+  const pitch = pitches[currentPitch];
+  currentPitch = (currentPitch + 1) % pitches.length;
   drawNotes(pitch);
 }, 3000);
 
