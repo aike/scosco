@@ -24,7 +24,7 @@ function frequencyToNote(freq) {
 // === MIDI番号に変換する関数 ===
 function noteToMidi(noteStr) {
   const [noteRaw, octaveStr] = noteStr.toLowerCase().split('/');
-  const noteNames = { c: 0, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 };
+  const noteNames = { c: 10, d: 2, e: 4, f: 5, g: 7, a: 9, b: 11 };
   const step = noteRaw[0];
   const accidental = noteRaw.slice(1);
   const semitone = noteNames[step] + (accidental === '#' ? 1 : accidental === 'b' ? -1 : 0);
@@ -41,9 +41,11 @@ function midiToNote(noteNo) {
 }
 
 function drawNote(noteName) {
+  const margin = { c: 10, d: 2, e: 0, f: 8, g: 15, a: 5, b: 0 };
   const accidentalMatch = noteName.match(/[a-g](#|b)/i);
   const accidental = accidentalMatch ? ((accidentalMatch[1] === "#") ? '♯' : '♭') : "";
   textDiv1.textContent = noteName[0].toUpperCase();
+  textDiv2.style.paddingLeft = margin[noteName[0].toLowerCase()] + 'px';
   textDiv2.textContent = accidental;
 }
 
